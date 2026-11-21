@@ -69,7 +69,7 @@ cd ../web && npm install && npm run dev
 
 Tests: `cd pipeline && uv run --with pytest pytest` and `cd web && npx vitest run --root .. cli web/src`.
 
-Cities live in `data/cities.json`. Gurugram is built; Bengaluru and Mumbai are configured and need the pipeline run (see the skill, Job 2).
+Cities live in `data/cities.json`. Gurugram is built; Vadodara, Bengaluru and Mumbai are configured and need the pipeline run (see the skill, Job 2). For Vadodara: `python3 mb_crawl.py list vadodara`, then `projects`, `osm_fetch.py vadodara`, `build_city.py vadodara`, then open `?city=vadodara`. Vadodara localities are named areas (Alkapuri, Gotri, Vasna Road) rather than numbered sectors. `pipeline/hrera.py` only reads Haryana's RERA site; GujRERA filings can be added to `data/verified/vadodara.json` by hand (Job 3 in the skill).
 
 Press `/` to search for a society. The Streets button switches to a street map with road and sector names.
 
