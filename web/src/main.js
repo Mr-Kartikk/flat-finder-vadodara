@@ -26,16 +26,16 @@ const DIVY = { // Divy's own Gurugram search, shown as the example
   ...structuredClone(DEFAULT_CRITERIA), kinds: ['apartment'], bhk: [2, 3, 4], roomArea: 138, minSqft: 1620, amenities: ['squash'] }; // 11'3" x 12'3" = 138 sq ft
 const STATE_LABEL = { match: 'Matches your search', likely: 'Likely match', probable: 'Probably fits (estimated)', unknown: 'Not checked yet', no: 'Does not match' };
 
-let crit = structuredClone(DEFAULT_CRITERIA);
+let crit = { ...structuredClone(DEFAULT_CRITERIA), mode: 'rent' };
 let baseMode = BASE_MODES.includes(params.get('map')) ? params.get('map') : 'streets';
 let roomMode = 'off', areaUnit = 'gaj', sortBy = 'best';
-let data, byId, map, feed, selected = null, states = new Map(), tourTimer = null, cityId = 'gurgaon', details = null;
+let data, byId, map, feed, selected = null, states = new Map(), tourTimer = null, cityId = 'vadodara', details = null;
 let myList = [], allAmenities = [];
 const highlights = { glow: true, bounds: true, labels: true, ...store.get('ff-highlights', {}) };
 
 async function boot() {
-  const cities = await fetch('/data/cities.json').then((r) => r.json()).catch(() => ({ gurgaon: { name: 'Gurugram' } }));
-  cityId = cities[params.get('city')] ? params.get('city') : 'gurgaon';
+  const cities = await fetch('/data/cities.json').then((r) => r.json()).catch(() => ({ vadodara: { name: 'Vadodara' } }));
+  cityId = cities[params.get('city')] ? params.get('city') : 'vadodara';
   const [city, shapes] = await Promise.all([
     fetch(`/data/${cityId}.json`).then((r) => r.json()),
     fetch(`/data/${cityId}-shapes.geojson`).then((r) => r.json()),
@@ -43,6 +43,7 @@ async function boot() {
   data = city;
   OVERVIEW.center = city.city.center;
   OVERVIEW.zoom = city.city.zoom || OVERVIEW.zoom;
+  OVERVIEW.pitch = city.city.pitch ?? OVERVIEW.pitch;
   byId = new Map(city.societies.map((s) => [s.id, s]));
   $('city-pick').replaceChildren(...Object.entries(cities).map(([id, c]) => new Option(c.name, id, false, id === cityId)));
   $('city-pick').onchange = () => { location.search = `?city=${$('city-pick').value}`; };
@@ -52,9 +53,9 @@ async function boot() {
   allAmenities = [...freq].sort((a, b) => b[1] - a[1]).map(([a, n]) => ({ name: a, n }));
 
   myList = params.get('list') ? params.get('list').split(',').filter((id) => byId.has(id)) : store.get(`ff-list-${cityId}`, []).filter((id) => byId.has(id));
-  const c = city.counts, m = city.price_model || {}, rated = city.societies.filter((s) => s.rating).length;
-  $('note').textContent = `${c.on_map.toLocaleString()} societies · ${(c.for_sale || 0).toLocaleString()} homes for sale, ${(c.for_rent || 0).toLocaleString()} for rent on Magicbricks · ${c.verified} verified from brochures and ${city.city.rera || 'RERA'} plans`;
-  $('about-prices').innerHTML = `Prices and rents are medians of live Magicbricks listings. <b>⚠</b> marks a listing price our checks think is a typo (far from the same home nearby, or rent and price that cannot both be right): it is shown as listed but not used for filters. <b>~</b> marks our estimate: rent is about ${((m.city_yield || 0.025) * 100).toFixed(1)}% of the price per year here (measured on ${m.pairs || 0} society and BHK pairs, correlation ${m.log_price_rent_correlation ?? 'n/a'}). "Probably fits" uses a cautious bedroom size estimated from unit size (${city.room_model?.n || 0} verified unit types). Resident ratings exist for ${rated.toLocaleString()} societies.`;
+  const c = city.counts;
+  $('note').textContent = `${c.for_rent.toLocaleString()} rental ads collected from Magicbricks and Square Yards · ${c.rent_known} show an asking rent · checked 22 Nov 2026. This is not the portals' full 128+ inventory. Pins are approximate neighborhoods.`;
+  $('about-prices').innerHTML = `This is a sample of listing details we could retrieve from Magicbricks and Square Yards, not the portals' full Vadodara inventory. Square Yards reports 128+ rental properties across categories (including offices and shops) and 16+ flats; we did not collect every listing. ${c.rent_known} of these ${c.for_rent} ads showed an asking rent in the retrieved page; the rest are included with price unavailable. Confirm current availability, prices and details with advertisers. Map pins are approximate neighborhood locations.`;
   $('dl-all').href = `/data/${cityId}-societies.csv`;
   $('dl-units').href = `/data/${cityId}-units.csv`;
   $('dl-results').onclick = exportResults;
@@ -601,10 +602,10 @@ function buildControls() {
 function buildOnboarding() {
   const c = data.counts;
   const steps = [
-    ['Every society in ' + data.city.name + ', on one map', `${c.on_map.toLocaleString()} housing societies, ${(c.for_sale || 0).toLocaleString()} homes for sale and ${(c.for_rent || 0).toLocaleString()} for rent. Each one has its prices, rents, resident ratings, what is nearby, and links to Google Maps.`],
-    ['Start with what you cannot live without', 'Pick Buy or Rent and your budget. Then set the smallest bedroom you can live with, by both sides or by area in gaj or sq ft. Add amenities and what you want nearby, like a park within 500 m.'],
-    ['How to read the map', '<span class="lg match"></span> Verified: every bedroom read from builder plans and passes.<br><span class="lg likely"></span> Likely: the rooms read so far pass.<br><span class="lg probable"></span> Probably fits: plans not read yet, estimated from unit size.<br><span class="lg unknown"></span> Not checked yet: no room data, so neither pass nor fail.'],
-    ['Open a society, keep a list', 'Click any building for prices, bedrooms, ratings and the research behind every number. Star the ones you like, or paste a list of names you already have. Export your results as a CSV any time.'],
+    [`Rental listings in ${data.city.name}`, `${c.for_rent.toLocaleString()} ads gathered from Magicbricks and Square Yards; ${c.rent_known} show asking rent. This is a sample, not the portals' complete inventory. Availability may have changed; pins are approximate neighborhoods.`],
+    ['Find a flat that fits', 'Set a rent budget, choose a BHK, and filter by amenities or nearby places. Bedroom dimensions have not been independently verified for these listings.'],
+    ['How to read the map', 'Markers show approximate listing neighborhoods, not building locations. Open the source listing to confirm the address and current availability.'],
+    ['Open a listing, keep a shortlist', 'Open any result for its rent, size, floor, furnishing and other details available from the source. Save listings you like or export the results as a CSV.'],
   ];
   let i = 0;
   const show = () => {

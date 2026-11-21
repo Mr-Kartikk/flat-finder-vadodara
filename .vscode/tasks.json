@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install Flat Finder web dependencies",
+      "type": "shell",
+      "command": "C:\\Program Files\\nodejs\\npm.cmd",
+      "args": ["install"],
+      "options": { "cwd": "${workspaceFolder}\\web" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Flat Finder web app",
+      "type": "shell",
+      "command": "C:\\Program Files\\nodejs\\npm.cmd",
+      "args": ["run", "dev", "--", "--host", "0.0.0.0"],
+      "options": { "cwd": "${workspaceFolder}\\web" },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

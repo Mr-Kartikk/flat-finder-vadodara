@@ -59,10 +59,11 @@ export function addSocietyLayers(map, shapes, points) {
     paint: { 'line-color': stateColor(COLORS.match), 'line-blur': 1.5,
       'line-width': ['interpolate', ['linear'], ['zoom'], 11, 0.6, 16, 2],
       'line-opacity': ['match', ['feature-state', 'st'], 'match', 0.9, 'likely', 0.7, 'probable', 0.7, 'unknown', 0.5, 'no', 0.05, 0.5] } });
-  map.addLayer({ id: 'glow', type: 'circle', source: 'pts', maxzoom: 15.5,
-    paint: { 'circle-color': stateColor(COLORS.match), 'circle-blur': 1,
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2, 12, 6, 15, 24],
-      'circle-opacity': ['match', ['feature-state', 'st'], 'match', 0.5, 'likely', 0.35, 'probable', 0.35, 'unknown', 0.14, 'no', 0, 0.25] } });
+  map.addLayer({ id: 'glow', type: 'circle', source: 'pts',
+    paint: { 'circle-color': stateColor(COLORS.match), 'circle-blur': 0.15,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 5, 12, 9, 16, 13, 20, 15],
+      'circle-stroke-color': '#fff3d8', 'circle-stroke-width': 1.5,
+      'circle-opacity': ['match', ['feature-state', 'st'], 'match', 1, 'likely', 0.95, 'probable', 0.9, 'unknown', 0.8, 'no', 0, 0.9] } });
   map.addLayer({ id: 'bld', type: 'fill-extrusion', source: 'shapes', minzoom: 11.5, filter: ['==', ['get', 'role'], 'bld'],
     paint: { 'fill-extrusion-color': stateColor(COLORS.match), 'fill-extrusion-height': ['get', 'h'], 'fill-extrusion-opacity': 0.95,
       'fill-extrusion-vertical-gradient': true } });
@@ -79,7 +80,7 @@ export function startPulse(map) {
   setInterval(() => {
     if (!map.getLayer('glow')) return;
     const k = 1 + 0.35 * Math.sin(performance.now() / 420);
-    map.setPaintProperty('glow', 'circle-radius', ['interpolate', ['linear'], ['zoom'], 9, 2 * k, 12, 6 * k, 15, 24 * k]);
+    map.setPaintProperty('glow', 'circle-radius', ['interpolate', ['linear'], ['zoom'], 9, 5 * k, 12, 9 * k, 16, 13 * k, 20, 15 * k]);
   }, 80);
 }
 

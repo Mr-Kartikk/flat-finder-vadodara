@@ -23,6 +23,11 @@ export function createFeed(el, modeEl, { events, byId }) {
   function ambient() {
     stop();
     modeEl.textContent = 'replay';
+    if (!ambientPool.length) {
+      modeEl.textContent = 'no updates';
+      el.textContent = 'No research activity recorded for this city yet.';
+      return;
+    }
     let i = Math.floor(Math.random() * ambientPool.length);
     timer = setInterval(() => push(ambientPool[i++ % ambientPool.length]), 1900);
   }
@@ -44,6 +49,11 @@ export function createFeed(el, modeEl, { events, byId }) {
     stop();
     modeEl.textContent = 'indexing';
     const pick = societies.filter((s) => s.units || s.verified).sort(() => Math.random() - 0.5).slice(0, 18);
+    if (!pick.length) {
+      modeEl.textContent = 'no updates';
+      el.textContent = 'No research activity recorded for this city yet.';
+      return;
+    }
     let i = 0;
     timer = setInterval(() => {
       if (i >= pick.length) { ambient(); return; }

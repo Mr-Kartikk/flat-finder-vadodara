@@ -69,7 +69,7 @@ cd ../web && npm install && npm run dev
 
 Tests: `cd pipeline && uv run --with pytest pytest` and `cd web && npx vitest run --root .. cli web/src`.
 
-Cities live in `data/cities.json`. Gurugram is built; Vadodara, Bengaluru and Mumbai are configured and need the pipeline run (see the skill, Job 2). For Vadodara: `python3 mb_crawl.py list vadodara`, then `projects`, `osm_fetch.py vadodara`, `build_city.py vadodara`, then open `?city=vadodara`. Vadodara localities are named areas (Alkapuri, Gotri, Vasna Road) rather than numbered sectors. `pipeline/hrera.py` only reads Haryana's RERA site; GujRERA filings can be added to `data/verified/vadodara.json` by hand (Job 3 in the skill).
+Cities live in `data/cities.json`. Gurugram is built; Bengaluru and Mumbai are configured but do not yet have built datasets. Vadodara currently includes 23 rental ads with details retrieved from Magicbricks and Square Yards; 14 show an asking rent in the retrieved pages. This is a sample, not the portals' full inventory: Square Yards reports 128+ rental properties across categories (including commercial properties) and 16+ flats, but those counts are not individual records in this app. Availability should be confirmed with advertisers. Map pins mark approximate neighborhoods rather than exact property addresses. Vadodara localities are named areas (Alkapuri, Gotri, Vasna Road) rather than numbered sectors. `pipeline/hrera.py` only reads Haryana's HRERA site; GujRERA filings can be added to `data/verified/vadodara.json` by hand (Job 3 in the skill).
 
 Press `/` to search for a society. The Streets button switches to a street map with road and sector names.
 
