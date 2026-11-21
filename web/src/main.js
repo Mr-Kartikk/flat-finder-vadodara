@@ -34,11 +34,12 @@ let myList = [], allAmenities = [];
 const highlights = { glow: true, bounds: true, labels: true, ...store.get('ff-highlights', {}) };
 
 async function boot() {
-  const cities = await fetch('/data/cities.json').then((r) => r.json()).catch(() => ({ vadodara: { name: 'Vadodara' } }));
+  const dataUrl = (file) => `${import.meta.env.BASE_URL}data/${file}`;
+  const cities = await fetch(dataUrl('cities.json')).then((r) => r.json()).catch(() => ({ vadodara: { name: 'Vadodara' } }));
   cityId = cities[params.get('city')] ? params.get('city') : 'vadodara';
   const [city, shapes] = await Promise.all([
-    fetch(`/data/${cityId}.json`).then((r) => r.json()),
-    fetch(`/data/${cityId}-shapes.geojson`).then((r) => r.json()),
+    fetch(dataUrl(`${cityId}.json`)).then((r) => r.json()),
+    fetch(dataUrl(`${cityId}-shapes.geojson`)).then((r) => r.json()),
   ]);
   data = city;
   OVERVIEW.center = city.city.center;
@@ -56,8 +57,8 @@ async function boot() {
   const c = city.counts;
   $('note').textContent = `${c.for_rent.toLocaleString()} rental ads collected from Magicbricks and Square Yards · ${c.rent_known} show an asking rent · checked 22 Nov 2026. This is not the portals' full 128+ inventory. Pins are approximate neighborhoods.`;
   $('about-prices').innerHTML = `This is a sample of listing details we could retrieve from Magicbricks and Square Yards, not the portals' full Vadodara inventory. Square Yards reports 128+ rental properties across categories (including offices and shops) and 16+ flats; we did not collect every listing. ${c.rent_known} of these ${c.for_rent} ads showed an asking rent in the retrieved page; the rest are included with price unavailable. Confirm current availability, prices and details with advertisers. Map pins are approximate neighborhood locations.`;
-  $('dl-all').href = `/data/${cityId}-societies.csv`;
-  $('dl-units').href = `/data/${cityId}-units.csv`;
+  $('dl-all').href = dataUrl(`${cityId}-societies.csv`);
+  $('dl-units').href = dataUrl(`${cityId}-units.csv`);
   $('dl-results').onclick = exportResults;
 
   feed = createFeed($('feed'), $('log-mode'), { events: city.events, byId });
@@ -448,7 +449,7 @@ function renderCard(s) {
 
 let detailsPromise = null;
 function loadDetails() {
-  detailsPromise ||= fetch(`/data/${cityId}-details.json`).then((r) => r.json()).then((d) => (details = d)).catch(() => (details = {}));
+  detailsPromise ||= fetch(`${import.meta.env.BASE_URL}data/${cityId}-details.json`).then((r) => r.json()).then((d) => (details = d)).catch(() => (details = {}));
   return detailsPromise;
 }
 

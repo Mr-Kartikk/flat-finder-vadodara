@@ -67,6 +67,8 @@ python3 build_city.py gurgaon                                               # ->
 cd ../web && npm install && npm run dev
 ```
 
+The site deploys to GitHub Pages on pushes to `main`: https://mr-kartikk.github.io/flat-finder-vadodara/
+
 Tests: `cd pipeline && uv run --with pytest pytest` and `cd web && npx vitest run --root .. cli web/src`.
 
 Cities live in `data/cities.json`. Gurugram is built; Bengaluru and Mumbai are configured but do not yet have built datasets. Vadodara currently includes 23 rental ads with details retrieved from Magicbricks and Square Yards; 14 show an asking rent in the retrieved pages. This is a sample, not the portals' full inventory: Square Yards reports 128+ rental properties across categories (including commercial properties) and 16+ flats, but those counts are not individual records in this app. Availability should be confirmed with advertisers. Map pins mark approximate neighborhoods rather than exact property addresses. Vadodara localities are named areas (Alkapuri, Gotri, Vasna Road) rather than numbered sectors. `pipeline/hrera.py` only reads Haryana's HRERA site; GujRERA filings can be added to `data/verified/vadodara.json` by hand (Job 3 in the skill).
