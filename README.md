@@ -75,7 +75,7 @@ Cities live in `data/cities.json`. Gurugram is built; Bengaluru and Mumbai are c
 
 Press `/` to search for a society. The Streets button switches to a street map with road and sector names.
 
-Useful links: `?city=gurgaon`, `?map=streets` or `?map=light`, `?preset=divy` loads the example search, `?open=<society id>` opens one society, `?nointro` skips the globe fly-in.
+Useful links: `?city=gurgaon`, `?map=streets` or `?map=light`, `?preset=kartik` loads Kartik's example search (`?preset=divy` remains supported), `?open=<society id>` opens one society, `?nointro` skips the globe fly-in.
 
 ## Add verified research
 
