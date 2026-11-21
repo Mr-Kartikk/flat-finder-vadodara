@@ -67,7 +67,7 @@ python3 build_city.py gurgaon                                               # ->
 cd ../web && npm install && npm run dev
 ```
 
-The site deploys to GitHub Pages on pushes to `main`: https://mr-kartikk.github.io/flat-finder-vadodara/
+The site deploys to GitHub Pages on pushes to `main`: https://mr-kartikk.github.io/flat-finder-vadodara/. The workflow builds the app from `web/` and syncs its compiled entry point and assets to the repository root so the site also works when Pages is configured to publish from the `main` branch.
 
 Tests: `cd pipeline && uv run --with pytest pytest` and `cd web && npx vitest run --root .. cli web/src`.
 

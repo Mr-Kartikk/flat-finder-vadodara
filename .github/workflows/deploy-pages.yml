@@ -3,10 +3,13 @@ name: Deploy Flat Finder
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - index.html
+      - assets/**
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,6 +37,19 @@ jobs:
         working-directory: web
         env:
           VITE_BASE_PATH: /flat-finder-vadodara/
+          VITE_DATA_PATH: /flat-finder-vadodara/web/public/data/
+      - name: Publish files for branch-based Pages
+        run: |
+          cp web/dist/index.html index.html
+          mkdir -p assets
+          cp web/dist/assets/* assets/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f index.html assets
+          if ! git diff --cached --quiet; then
+            git commit -m "Update GitHub Pages build"
+            git push
+          fi
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

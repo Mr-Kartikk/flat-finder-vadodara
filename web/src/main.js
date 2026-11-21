@@ -10,6 +10,8 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const mobile = matchMedia('(max-width: 700px)').matches;
 const REPO = 'https://github.com/kairothq/flat-finder';
 const params = new URLSearchParams(location.search);
+const dataPath = import.meta.env.VITE_DATA_PATH || `${import.meta.env.BASE_URL}data/`;
+const dataUrl = (file) => `${dataPath}${file}`;
 const store = { // localStorage can be missing or blocked: never let it break the page
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore */ } },
@@ -34,7 +36,6 @@ let myList = [], allAmenities = [];
 const highlights = { glow: true, bounds: true, labels: true, ...store.get('ff-highlights', {}) };
 
 async function boot() {
-  const dataUrl = (file) => `${import.meta.env.BASE_URL}data/${file}`;
   const cities = await fetch(dataUrl('cities.json')).then((r) => r.json()).catch(() => ({ vadodara: { name: 'Vadodara' } }));
   cityId = cities[params.get('city')] ? params.get('city') : 'vadodara';
   const [city, shapes] = await Promise.all([
@@ -449,7 +450,7 @@ function renderCard(s) {
 
 let detailsPromise = null;
 function loadDetails() {
-  detailsPromise ||= fetch(`${import.meta.env.BASE_URL}data/${cityId}-details.json`).then((r) => r.json()).then((d) => (details = d)).catch(() => (details = {}));
+  detailsPromise ||= fetch(dataUrl(`${cityId}-details.json`)).then((r) => r.json()).then((d) => (details = d)).catch(() => (details = {}));
   return detailsPromise;
 }
 
